@@ -10,5 +10,9 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	geodeClient.Region("r1").Put()
+	log.Println("Performing Put operation")
+	err = geodeClient.Region("SampleData").Put("K1", "V1")
+	if err != nil {
+		log.Println(err)
+	}
 }

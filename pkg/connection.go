@@ -92,6 +92,8 @@ func NewGeodeConnection(host string, port int) (*Connection, error) {
 	}
 	if va.GetVersionAccepted() == false {
 		return nil, fmt.Errorf("client version is not compitable with server")
+	} else {
+		log.Println("Connection established")
 	}
 	return c, nil
 }
