@@ -10,5 +10,5 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Println(geodeClient)
+	geodeClient.Region("r1").Put()
 }

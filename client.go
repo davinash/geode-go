@@ -24,3 +24,10 @@ func NewConnection(host string, port int) (*GeodeClient, error) {
 func (g *GeodeClient) Disconnect() {
 
 }
+
+func (g *GeodeClient) Region(s string) *pkg.Region {
+	return &pkg.Region{
+		Name: s,
+		Conn: g.Conn,
+	}
+}
