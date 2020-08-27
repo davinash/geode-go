@@ -11,9 +11,10 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	region := geodeClient.Region("SampleData")
 	log.Println("Performing Put operation")
 	for i := 0; i < 10; i++ {
-		err = geodeClient.Region("SampleData").Put(
+		err = region.Put(
 			fmt.Sprintf("Key-%d", i),
 			fmt.Sprintf("Value-%d", i))
 		if err != nil {
@@ -22,9 +23,14 @@ func main() {
 	}
 	for i := 0; i < 10; i++ {
 		k := fmt.Sprintf("Key-%d", i)
-		v, err := geodeClient.Region("SampleData").Get(k)
+		v, err := region.Get(k)
 		if err == nil {
 			log.Printf("Key = %v  Value = %v\n", k, v)
 		}
 	}
+	val, err := region.PutIfAbsentRequest("key1", "value11")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("PutIfAbsentRequest -> %v", val)
 }

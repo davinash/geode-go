@@ -10,28 +10,39 @@ type Region struct {
 	Conn *Connection
 }
 
-func (r *Region) Put(key interface{}, val interface{}) error {
+// CreateEntry Creates entry
+func CreateEntry(key interface{}, val interface{}) (*v1.Entry, error) {
 	entry := v1.Entry{}
 	v, err := GetEncodedValue(key)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	entry.Key = v
 
 	v, err = GetEncodedValue(val)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	entry.Value = v
-	putRequest := v1.PutRequest{
-		RegionName: r.Name,
-		Entry:      &entry,
-	}
-	m := v1.Message{
-		MessageType: &v1.Message_PutRequest{PutRequest: &putRequest},
+
+	return &entry, nil
+}
+
+func (r *Region) Put(key interface{}, val interface{}) error {
+	entry, err := CreateEntry(key, val)
+	if err != nil {
+		return err
 	}
 
-	putResp, err := r.Conn.SendAndReceive(&m)
+	request := v1.PutRequest{
+		RegionName: r.Name,
+		Entry:      entry,
+	}
+	msg := v1.Message{
+		MessageType: &v1.Message_PutRequest{PutRequest: &request},
+	}
+
+	putResp, err := r.Conn.SendAndReceive(&msg)
 	if err != nil {
 		return err
 	}
@@ -49,13 +60,13 @@ func (r *Region) Get(key interface{}) (interface{}, error) {
 		return nil, err
 	}
 
-	getRequest := v1.GetRequest{
+	request := v1.GetRequest{
 		RegionName: r.Name,
 		Key:        v,
 	}
-	m := v1.Message{MessageType: &v1.Message_GetRequest{GetRequest: &getRequest}}
+	msg := v1.Message{MessageType: &v1.Message_GetRequest{GetRequest: &request}}
 
-	resp, err := r.Conn.SendAndReceive(&m)
+	resp, err := r.Conn.SendAndReceive(&msg)
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +76,33 @@ func (r *Region) Get(key interface{}) (interface{}, error) {
 			resp.GetErrorResponse().GetError().ErrorCode))
 	}
 	ev := resp.GetGetResponse().GetResult()
+	value, err := GetDecodedValue(ev)
+	if err != nil {
+		return nil, err
+	}
+	return value, nil
+}
+
+func (r *Region) PutIfAbsentRequest(key interface{}, val interface{}) (interface{}, error) {
+	entry, err := CreateEntry(key, val)
+	if err != nil {
+		return nil, err
+	}
+	request := v1.PutIfAbsentRequest{
+		RegionName: r.Name,
+		Entry:      entry,
+	}
+	msg := v1.Message{MessageType: &v1.Message_PutIfAbsentRequest{PutIfAbsentRequest: &request}}
+	resp, err := r.Conn.SendAndReceive(&msg)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetErrorResponse() != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("Get Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	ev := resp.GetPutIfAbsentResponse().GetOldValue()
 	value, err := GetDecodedValue(ev)
 	if err != nil {
 		return nil, err
