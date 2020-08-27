@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	client "github.com/davinash/geode-go"
 	"log"
 )
@@ -11,8 +12,12 @@ func main() {
 		log.Fatalln(err)
 	}
 	log.Println("Performing Put operation")
-	err = geodeClient.Region("SampleData").Put("K1", "V1")
-	if err != nil {
-		log.Println(err)
+	for i := 0; i < 10; i++ {
+		err = geodeClient.Region("SampleData").Put(
+			fmt.Sprintf("Key-%d", i),
+			fmt.Sprintf("Value-%d", i))
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }

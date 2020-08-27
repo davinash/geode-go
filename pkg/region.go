@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	v1 "github.com/davinash/geode-go/pb/geode/protobuf/v1"
 	"log"
 )
@@ -36,7 +37,11 @@ func (r *Region) Put(key interface{}, val interface{}) error {
 	if err != nil {
 		return err
 	}
-	log.Println(putResp)
+	if putResp.GetErrorResponse() != nil {
+		return fmt.Errorf(fmt.Sprintf("Put Failed Message = %s, Error Code = %d",
+			putResp.GetErrorResponse().GetError().Message,
+			putResp.GetErrorResponse().GetError().ErrorCode))
+	}
 	return nil
 }
 
