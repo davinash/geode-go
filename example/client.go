@@ -28,9 +28,9 @@ func main() {
 			log.Printf("Key = %v  Value = %v\n", k, v)
 		}
 	}
-	val, err := region.PutIfAbsentRequest("key1", "value11")
+	val, err := region.PutIfAbsent("key1", "value11")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("PutIfAbsentRequest -> %v", val)
+	log.Printf("PutIfAbsent -> %v", val)
 }

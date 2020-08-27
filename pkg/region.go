@@ -83,7 +83,7 @@ func (r *Region) Get(key interface{}) (interface{}, error) {
 	return value, nil
 }
 
-func (r *Region) PutIfAbsentRequest(key interface{}, val interface{}) (interface{}, error) {
+func (r *Region) PutIfAbsent(key interface{}, val interface{}) (interface{}, error) {
 	entry, err := CreateEntry(key, val)
 	if err != nil {
 		return nil, err
@@ -108,4 +108,45 @@ func (r *Region) PutIfAbsentRequest(key interface{}, val interface{}) (interface
 		return nil, err
 	}
 	return value, nil
+}
+
+type KeyValue struct {
+	Key   interface{}
+	Value interface{}
+}
+
+func (r *Region) PutAll(kvs []*KeyValue) ([]interface{}, error) {
+	entries := make([]*v1.Entry, 0)
+	for _, kvs := range kvs {
+		entry, err := CreateEntry(kvs.Key, kvs.Value)
+		if err != nil {
+			return nil, err
+		}
+		entries = append(entries, entry)
+	}
+	request := v1.PutAllRequest{
+		RegionName: r.Name,
+		Entry:      entries,
+	}
+
+	msg := v1.Message{MessageType: &v1.Message_PutAllRequest{PutAllRequest: &request}}
+	resp, err := r.Conn.SendAndReceive(&msg)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetErrorResponse() != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("Get Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	ev := resp.GetPutAllResponse().GetFailedKeys()
+	failedKeys := make([]interface{}, 0)
+	for _, k := range ev {
+		value, err := GetDecodedValue(k.GetKey())
+		if err != nil {
+			return failedKeys, err
+		}
+		failedKeys = append(failedKeys, value)
+	}
+	return failedKeys, nil
 }

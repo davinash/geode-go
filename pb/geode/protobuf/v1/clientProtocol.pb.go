@@ -964,7 +964,7 @@ var file_v1_clientProtocol_proto_goTypes = []interface{}{
 	(*DisconnectClientResponse)(nil),        // 31: org.apache.geode.internal.protocol.protobuf.v1.DisconnectClientResponse
 	(*ClearRequest)(nil),                    // 32: org.apache.geode.internal.protocol.protobuf.v1.ClearRequest
 	(*ClearResponse)(nil),                   // 33: org.apache.geode.internal.protocol.protobuf.v1.ClearResponse
-	(*PutIfAbsentRequest)(nil),              // 34: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentRequest
+	(*PutIfAbsentRequest)(nil),              // 34: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsent
 	(*PutIfAbsentResponse)(nil),             // 35: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentResponse
 	(*Error)(nil),                           // 36: org.apache.geode.internal.protocol.protobuf.v1.Error
 }
@@ -1002,7 +1002,7 @@ var file_v1_clientProtocol_proto_depIdxs = []int32{
 	31, // 30: org.apache.geode.internal.protocol.protobuf.v1.Message.disconnectClientResponse:type_name -> org.apache.geode.internal.protocol.protobuf.v1.DisconnectClientResponse
 	32, // 31: org.apache.geode.internal.protocol.protobuf.v1.Message.clearRequest:type_name -> org.apache.geode.internal.protocol.protobuf.v1.ClearRequest
 	33, // 32: org.apache.geode.internal.protocol.protobuf.v1.Message.clearResponse:type_name -> org.apache.geode.internal.protocol.protobuf.v1.ClearResponse
-	34, // 33: org.apache.geode.internal.protocol.protobuf.v1.Message.putIfAbsentRequest:type_name -> org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentRequest
+	34, // 33: org.apache.geode.internal.protocol.protobuf.v1.Message.putIfAbsentRequest:type_name -> org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsent
 	35, // 34: org.apache.geode.internal.protocol.protobuf.v1.Message.putIfAbsentResponse:type_name -> org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentResponse
 	36, // 35: org.apache.geode.internal.protocol.protobuf.v1.ErrorResponse.error:type_name -> org.apache.geode.internal.protocol.protobuf.v1.Error
 	36, // [36:36] is the sub-list for method output_type

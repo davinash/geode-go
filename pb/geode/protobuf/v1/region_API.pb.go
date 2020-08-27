@@ -172,7 +172,7 @@ func (x *PutIfAbsentRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PutIfAbsentRequest.ProtoReflect.Descriptor instead.
+// Deprecated: Use PutIfAbsent.ProtoReflect.Descriptor instead.
 func (*PutIfAbsentRequest) Descriptor() ([]byte, []int) {
 	return file_v1_region_API_proto_rawDescGZIP(), []int{2}
 }
@@ -1333,7 +1333,7 @@ var file_v1_region_API_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_v1_region_API_proto_goTypes = []interface{}{
 	(*PutRequest)(nil),             // 0: org.apache.geode.internal.protocol.protobuf.v1.PutRequest
 	(*PutResponse)(nil),            // 1: org.apache.geode.internal.protocol.protobuf.v1.PutResponse
-	(*PutIfAbsentRequest)(nil),     // 2: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentRequest
+	(*PutIfAbsentRequest)(nil),     // 2: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsent
 	(*PutIfAbsentResponse)(nil),    // 3: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentResponse
 	(*GetRequest)(nil),             // 4: org.apache.geode.internal.protocol.protobuf.v1.GetRequest
 	(*GetResponse)(nil),            // 5: org.apache.geode.internal.protocol.protobuf.v1.GetResponse
@@ -1361,7 +1361,7 @@ var file_v1_region_API_proto_goTypes = []interface{}{
 }
 var file_v1_region_API_proto_depIdxs = []int32{
 	22, // 0: org.apache.geode.internal.protocol.protobuf.v1.PutRequest.entry:type_name -> org.apache.geode.internal.protocol.protobuf.v1.Entry
-	22, // 1: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentRequest.entry:type_name -> org.apache.geode.internal.protocol.protobuf.v1.Entry
+	22, // 1: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsent.entry:type_name -> org.apache.geode.internal.protocol.protobuf.v1.Entry
 	23, // 2: org.apache.geode.internal.protocol.protobuf.v1.PutIfAbsentResponse.oldValue:type_name -> org.apache.geode.internal.protocol.protobuf.v1.EncodedValue
 	23, // 3: org.apache.geode.internal.protocol.protobuf.v1.GetRequest.key:type_name -> org.apache.geode.internal.protocol.protobuf.v1.EncodedValue
 	23, // 4: org.apache.geode.internal.protocol.protobuf.v1.GetResponse.result:type_name -> org.apache.geode.internal.protocol.protobuf.v1.EncodedValue
