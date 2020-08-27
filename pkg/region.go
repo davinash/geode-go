@@ -11,7 +11,6 @@ type Region struct {
 }
 
 func (r *Region) Put(key interface{}, val interface{}) error {
-	log.Println("Doing Put Now")
 	entry := v1.Entry{}
 	v, err := GetEncodedValue(key)
 	if err != nil {
@@ -28,14 +27,16 @@ func (r *Region) Put(key interface{}, val interface{}) error {
 		RegionName: r.Name,
 		Entry:      &entry,
 	}
+	m := v1.Message{
+		MessageType: &v1.Message_PutRequest{PutRequest: &putRequest},
+	}
 	log.Printf("PutRequest -> %+v", putRequest)
 
-	putResp, err := r.Conn.SendAndReceive(&putRequest)
+	putResp, err := r.Conn.SendAndReceive(&m)
 	if err != nil {
 		return err
 	}
 	log.Println(putResp)
-
 	return nil
 }
 
