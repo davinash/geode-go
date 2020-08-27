@@ -16,3 +16,14 @@ func GetEncodedValue(v interface{}) (*v1.EncodedValue, error) {
 	}
 	return eV, nil
 }
+
+func GetDecodedValue(ev *v1.EncodedValue) (interface{}, error) {
+	var v interface{}
+	switch t := ev.GetValue().(type) {
+	case *v1.EncodedValue_StringResult:
+		v = t.StringResult
+	default:
+		return nil, fmt.Errorf(fmt.Sprintf("Type %v not supported", t))
+	}
+	return v, nil
+}

@@ -29,7 +29,6 @@ func (c *Connection) Send(m proto.Message) error {
 	if err != nil {
 		return err
 	}
-	log.Println("Send Complete")
 	return nil
 }
 

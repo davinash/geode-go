@@ -20,4 +20,11 @@ func main() {
 			log.Println(err)
 		}
 	}
+	for i := 0; i < 10; i++ {
+		k := fmt.Sprintf("Key-%d", i)
+		v, err := geodeClient.Region("SampleData").Get(k)
+		if err == nil {
+			log.Printf("Key = %v  Value = %v\n", k, v)
+		}
+	}
 }
