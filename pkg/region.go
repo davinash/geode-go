@@ -261,3 +261,18 @@ func (r *Region) KeySet() ([]interface{}, error) {
 	}
 	return result, nil
 }
+
+func (r *Region) Clear() error {
+	request := v1.ClearRequest{RegionName: r.Name}
+	msg := v1.Message{MessageType: &v1.Message_ClearRequest{ClearRequest: &request}}
+	resp, err := r.Conn.SendAndReceive(&msg)
+	if err != nil {
+		return err
+	}
+	if resp.GetErrorResponse() != nil {
+		return fmt.Errorf(fmt.Sprintf("Get Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	return nil
+}

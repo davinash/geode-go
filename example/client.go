@@ -79,4 +79,10 @@ func main() {
 	log.Printf("Region size  %v\n", size)
 
 	log.Println(region.KeySet())
+	err = region.Clear()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	ks, _ := region.KeySet()
+	log.Printf("After Clearn Op = %v\n", ks)
 }
