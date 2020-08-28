@@ -221,3 +221,20 @@ func (r *Region) Remove(key interface{}) error {
 	}
 	return nil
 }
+
+func (r *Region) Size() (int, error) {
+	request := v1.GetSizeRequest{
+		RegionName: r.Name,
+	}
+	msg := v1.Message{MessageType: &v1.Message_GetSizeRequest{GetSizeRequest: &request}}
+	resp, err := r.Conn.SendAndReceive(&msg)
+	if err != nil {
+		return -1, err
+	}
+	if resp.GetErrorResponse() != nil {
+		return -1, fmt.Errorf(fmt.Sprintf("Get Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	return int(resp.GetGetSizeResponse().GetSize()), nil
+}

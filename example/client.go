@@ -72,4 +72,9 @@ func main() {
 	log.Printf("Get Response after Remove = %v\n", resp)
 
 	log.Println(geodeClient.GetRegionNames())
+	size, err := region.Size()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Region size  %v\n", size)
 }
