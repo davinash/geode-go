@@ -70,4 +70,6 @@ func main() {
 		log.Fatalln(err)
 	}
 	log.Printf("Get Response after Remove = %v\n", resp)
+
+	log.Println(geodeClient.GetRegionNames())
 }
