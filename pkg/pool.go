@@ -1,9 +1,12 @@
 package pkg
 
 import (
+	"fmt"
+	"github.com/davinash/geode-go/pb/geode/protobuf"
 	v1 "github.com/davinash/geode-go/pb/geode/protobuf/v1"
 	"github.com/golang/protobuf/proto"
 	"io"
+	"log"
 	"net"
 	"sync"
 )
@@ -31,8 +34,36 @@ func (p *Pool) Disconnect() {
 	}
 }
 
-func (p *Pool) AddServer(host string, port int) {
+func (p *Pool) AddServer(host string, port int) error {
+	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
+	if err != nil {
+		return err
+	}
+	cv := protobuf.NewConnectionClientVersion{
+		MajorVersion: uint32(protobuf.MajorVersions_CURRENT_MAJOR_VERSION),
+		MinorVersion: uint32(protobuf.MinorVersions_CURRENT_MINOR_VERSION),
+	}
+	err = p.Send(&cv, conn)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	resp, err := p.ReceiveRaw(conn)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	b := proto.NewBuffer(resp)
+	var va protobuf.VersionAcknowledgement
+	err = b.DecodeMessage(&va)
+	if err != nil {
+		return err
+	}
+	if va.GetVersionAccepted() == false {
+		return fmt.Errorf("client version is not compitable with server")
+	} else {
+		log.Println("Connection established")
+	}
 	p.Servers[host] = port
+	return nil
 }
 
 func (p *Pool) Send(m proto.Message, conn net.Conn) error {

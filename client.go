@@ -7,16 +7,11 @@ import (
 )
 
 type GeodeClient struct {
-	// Connection object
 	Pool *pkg.Pool
 }
 
-// NewClient Creates a new connection with Geode Cluster
-func NewClient(host string, port int) (*GeodeClient, error) {
-	g := &GeodeClient{}
-	g.Pool = pkg.NewPool()
-
-	return g, nil
+func NewClient() (*GeodeClient, error) {
+	return &GeodeClient{Pool: pkg.NewPool()}, nil
 }
 
 // Disconnect disconnect current connection
@@ -45,7 +40,6 @@ func (g *GeodeClient) GetRegionNames() ([]string, error) {
 	return resp.GetGetRegionNamesResponse().GetRegions(), nil
 }
 
-func (g *GeodeClient) AddServer(host string, port int) {
-	//g.Servers[host] = port
-	g.Pool.AddServer(host, port)
+func (g *GeodeClient) AddServer(host string, port int) error {
+	return g.Pool.AddServer(host, port)
 }
