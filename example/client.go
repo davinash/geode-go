@@ -77,4 +77,6 @@ func main() {
 		log.Fatalln(err)
 	}
 	log.Printf("Region size  %v\n", size)
+
+	log.Println(region.KeySet())
 }

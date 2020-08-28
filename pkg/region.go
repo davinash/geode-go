@@ -238,3 +238,26 @@ func (r *Region) Size() (int, error) {
 	}
 	return int(resp.GetGetSizeResponse().GetSize()), nil
 }
+
+func (r *Region) KeySet() ([]interface{}, error) {
+	request := v1.KeySetRequest{RegionName: r.Name}
+	msg := v1.Message{MessageType: &v1.Message_KeySetRequest{KeySetRequest: &request}}
+	resp, err := r.Conn.SendAndReceive(&msg)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetErrorResponse() != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("Get Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	result := make([]interface{}, 0)
+	for _, k := range resp.GetKeySetResponse().Keys {
+		kd, err := GetDecodedValue(k)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, kd)
+	}
+	return result, nil
+}
