@@ -13,6 +13,8 @@ func GetEncodedValue(v interface{}) (*v1.EncodedValue, error) {
 		switch t := v.(type) {
 		case string:
 			eV.Value = &v1.EncodedValue_StringResult{StringResult: t}
+		case []byte:
+			eV.Value = &v1.EncodedValue_BinaryResult{BinaryResult: t}
 		default:
 			return nil, fmt.Errorf(fmt.Sprintf("Type %v not supported", t))
 		}
@@ -28,6 +30,8 @@ func GetDecodedValue(ev *v1.EncodedValue) (interface{}, error) {
 		v = t.StringResult
 	case *v1.EncodedValue_NullResult:
 		v = nil
+	case *v1.EncodedValue_BinaryResult:
+		v = t.BinaryResult
 	default:
 		return nil, fmt.Errorf(fmt.Sprintf("Type %v not supported", t))
 	}
