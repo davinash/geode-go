@@ -150,3 +150,74 @@ func (r *Region) PutAll(kvs []*KeyValue) ([]interface{}, error) {
 	}
 	return failedKeys, nil
 }
+
+func (r *Region) GetAll(keys []string) ([]*KeyValue, error) {
+	keysE := make([]*v1.EncodedValue, 0)
+	for _, k := range keys {
+		kE, err := GetEncodedValue(k)
+		if err != nil {
+			return nil, err
+		}
+		keysE = append(keysE, kE)
+	}
+
+	request := v1.GetAllRequest{
+		RegionName:  r.Name,
+		Key:         keysE,
+		CallbackArg: nil,
+	}
+	msg := v1.Message{MessageType: &v1.Message_GetAllRequest{GetAllRequest: &request}}
+	resp, err := r.Conn.SendAndReceive(&msg)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetErrorResponse() != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("Get Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	result := make([]*KeyValue, 0)
+	entries := resp.GetGetAllResponse().GetEntries()
+	for _, e := range entries {
+		kv := KeyValue{
+			Key:   nil,
+			Value: nil,
+		}
+		value, err := GetDecodedValue(e.Key)
+		if err != nil {
+			return nil, err
+		}
+		kv.Key = value
+
+		value, err = GetDecodedValue(e.Value)
+		if err != nil {
+			return nil, err
+		}
+		kv.Value = value
+
+		result = append(result, &kv)
+	}
+	return result, nil
+}
+
+func (r *Region) Remove(key interface{}) error {
+	kd, err := GetEncodedValue(key)
+	if err != nil {
+		return err
+	}
+	request := v1.RemoveRequest{
+		RegionName: r.Name,
+		Key:        kd,
+	}
+	msg := v1.Message{MessageType: &v1.Message_RemoveRequest{RemoveRequest: &request}}
+	resp, err := r.Conn.SendAndReceive(&msg)
+	if err != nil {
+		return err
+	}
+	if resp.GetErrorResponse() != nil {
+		return fmt.Errorf(fmt.Sprintf("Get Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	return nil
+}
