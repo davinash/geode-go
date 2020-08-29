@@ -22,9 +22,9 @@ type Pool struct {
 	pool    chan *Server
 }
 
-func NewPool() *Pool {
+func NewPool(maxConn int) *Pool {
 	return &Pool{
-		pool: make(chan *Server, 10),
+		pool: make(chan *Server, maxConn),
 	}
 }
 

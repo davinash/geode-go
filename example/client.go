@@ -8,12 +8,16 @@ import (
 )
 
 func main() {
-	geodeClient, err := client.NewClient()
+	geodeClient, err := client.NewClient(100)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	err = geodeClient.AddServer("127.0.0.1", 40404)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = geodeClient.AddServer("127.0.0.1", 40405)
 	if err != nil {
 		log.Fatalln(err)
 	}

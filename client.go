@@ -10,8 +10,8 @@ type GeodeClient struct {
 	Pool *pkg.Pool
 }
 
-func NewClient() (*GeodeClient, error) {
-	return &GeodeClient{Pool: pkg.NewPool()}, nil
+func NewClient(maxConn int) (*GeodeClient, error) {
+	return &GeodeClient{Pool: pkg.NewPool(maxConn)}, nil
 }
 
 // Disconnect disconnect current connection
