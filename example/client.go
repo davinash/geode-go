@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	client "github.com/davinash/geode-go"
 	"github.com/davinash/geode-go/pkg"
@@ -99,4 +100,35 @@ func main() {
 	}
 	ks, _ := region.KeySet()
 	log.Printf("After Clearn Op = %v\n", ks)
+
+	region.Put("abc", "xyz")
+	_, _ = region.Get("abc")
+
+	type Key struct {
+		Name string
+	}
+	type Value struct {
+		Age  int
+		Dept string
+	}
+	err = region.Put(Key{
+		Name: "Hello1",
+	}, Value{
+		Age:  10,
+		Dept: "Dept1",
+	})
+	if err != nil {
+		log.Println(err)
+	}
+
+	v, err := region.Get(Key{
+		Name: "Hello1",
+	})
+	if err != nil {
+		log.Printf("=-=-=-=-=-= : %v\n", err)
+	}
+	var v1 Value
+	json.Unmarshal(v.([]byte), &v1)
+	fmt.Println(v1)
+
 }
