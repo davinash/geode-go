@@ -7,19 +7,11 @@ import (
 )
 
 type GeodeClient struct {
-	// Connection object
-	Conn *pkg.Connection
+	Pool *pkg.Pool
 }
 
-// NewConnection Creates a new connection with Geode Cluster
-func NewConnection(host string, port int) (*GeodeClient, error) {
-	g := &GeodeClient{}
-	c, err := pkg.NewGeodeConnection(host, port)
-	if err != nil {
-		return nil, err
-	}
-	g.Conn = c
-	return g, nil
+func NewClient(maxConn int) (*GeodeClient, error) {
+	return &GeodeClient{Pool: pkg.NewPool(maxConn)}, nil
 }
 
 // Disconnect disconnect current connection
@@ -30,13 +22,13 @@ func (g *GeodeClient) Disconnect() {
 func (g *GeodeClient) Region(s string) *pkg.Region {
 	return &pkg.Region{
 		Name: s,
-		Conn: g.Conn,
+		Pool: g.Pool,
 	}
 }
 
 func (g *GeodeClient) GetRegionNames() ([]string, error) {
 	msg := v1.Message{MessageType: &v1.Message_GetRegionNamesRequest{}}
-	resp, err := g.Conn.SendAndReceive(&msg)
+	resp, err := g.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return nil, err
 	}
@@ -46,4 +38,8 @@ func (g *GeodeClient) GetRegionNames() ([]string, error) {
 			resp.GetErrorResponse().GetError().ErrorCode))
 	}
 	return resp.GetGetRegionNamesResponse().GetRegions(), nil
+}
+
+func (g *GeodeClient) AddServer(host string, port int) error {
+	return g.Pool.AddServer(host, port)
 }

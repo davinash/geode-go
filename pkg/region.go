@@ -7,7 +7,7 @@ import (
 
 type Region struct {
 	Name string
-	Conn *Connection
+	Pool *Pool
 }
 
 // CreateEntry Creates entry
@@ -42,7 +42,7 @@ func (r *Region) Put(key interface{}, val interface{}) error {
 		MessageType: &v1.Message_PutRequest{PutRequest: &request},
 	}
 
-	putResp, err := r.Conn.SendAndReceive(&msg)
+	putResp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func (r *Region) Get(key interface{}) (interface{}, error) {
 	}
 	msg := v1.Message{MessageType: &v1.Message_GetRequest{GetRequest: &request}}
 
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (r *Region) PutIfAbsent(key interface{}, val interface{}) (interface{}, err
 		Entry:      entry,
 	}
 	msg := v1.Message{MessageType: &v1.Message_PutIfAbsentRequest{PutIfAbsentRequest: &request}}
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func (r *Region) PutAll(kvs []*KeyValue) ([]interface{}, error) {
 	}
 
 	msg := v1.Message{MessageType: &v1.Message_PutAllRequest{PutAllRequest: &request}}
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +167,7 @@ func (r *Region) GetAll(keys []string) ([]*KeyValue, error) {
 		CallbackArg: nil,
 	}
 	msg := v1.Message{MessageType: &v1.Message_GetAllRequest{GetAllRequest: &request}}
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +210,7 @@ func (r *Region) Remove(key interface{}) error {
 		Key:        kd,
 	}
 	msg := v1.Message{MessageType: &v1.Message_RemoveRequest{RemoveRequest: &request}}
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return err
 	}
@@ -227,7 +227,7 @@ func (r *Region) Size() (int, error) {
 		RegionName: r.Name,
 	}
 	msg := v1.Message{MessageType: &v1.Message_GetSizeRequest{GetSizeRequest: &request}}
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return -1, err
 	}
@@ -242,7 +242,7 @@ func (r *Region) Size() (int, error) {
 func (r *Region) KeySet() ([]interface{}, error) {
 	request := v1.KeySetRequest{RegionName: r.Name}
 	msg := v1.Message{MessageType: &v1.Message_KeySetRequest{KeySetRequest: &request}}
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +265,7 @@ func (r *Region) KeySet() ([]interface{}, error) {
 func (r *Region) Clear() error {
 	request := v1.ClearRequest{RegionName: r.Name}
 	msg := v1.Message{MessageType: &v1.Message_ClearRequest{ClearRequest: &request}}
-	resp, err := r.Conn.SendAndReceive(&msg)
+	resp, err := r.Pool.SendAndReceive(&msg)
 	if err != nil {
 		return err
 	}
