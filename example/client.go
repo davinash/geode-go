@@ -21,6 +21,10 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	err = geodeClient.AddServer("127.0.0.1", 40406)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	region := geodeClient.Region("SampleData")
 	log.Println("----- Put -----")
