@@ -7,31 +7,31 @@ import (
 	"github.com/golang/protobuf/proto"
 	"io"
 	"log"
+	"math/rand"
 	"net"
-	"sync"
+	"time"
 )
 
-type GeodeConnection struct {
-	Host  string
-	Port  int
-	InUse bool
-	Conn  net.Conn
-	mux   sync.Mutex
+type Server struct {
+	Host string
+	Port int
+	Conn net.Conn
 }
-
 type Pool struct {
-	Servers     map[string]int
-	Connections []*GeodeConnection
+	Servers []Server
+	pool    chan *Server
 }
 
 func NewPool() *Pool {
-	return &Pool{}
+	return &Pool{
+		pool: make(chan *Server, 10),
+	}
 }
 
 func (p *Pool) Disconnect() {
-	for _, c := range p.Connections {
-		c.Conn.Close()
-	}
+	//for _, c := range p.Connections {
+	//	c.Conn.Close()
+	//}
 }
 
 func (p *Pool) AddServer(host string, port int) error {
@@ -62,7 +62,15 @@ func (p *Pool) AddServer(host string, port int) error {
 	} else {
 		log.Println("Connection established")
 	}
-	p.Servers[host] = port
+	p.Servers = append(p.Servers, Server{
+		Host: host,
+		Port: port,
+	})
+	p.pool <- &Server{
+		Host: host,
+		Port: port,
+		Conn: conn,
+	}
 	return nil
 }
 
@@ -119,17 +127,39 @@ func (p *Pool) Receive(conn net.Conn) (*v1.Message, error) {
 	return &pr, nil
 }
 
+func (p *Pool) Return(s *Server) {
+	select {
+	case p.pool <- s:
+	default:
+		// let it go, let it go...
+	}
+}
+
 func (p *Pool) SendAndReceive(m proto.Message) (*v1.Message, error) {
-	conn, err := p.GetOrCreateConnection()
+	s, err := p.Borrow()
+	defer p.Return(s)
+
 	if err != nil {
 		return nil, err
 	}
-	if err := p.Send(m, conn); err != nil {
+	if err := p.Send(m, s.Conn); err != nil {
 		return nil, err
 	}
-	return p.Receive(conn)
+	return p.Receive(s.Conn)
 }
 
-func (p *Pool) GetOrCreateConnection() (net.Conn, error) {
-	return nil, nil
+func (p *Pool) Borrow() (*Server, error) {
+	var c *Server
+	select {
+	case c = <-p.pool:
+	default:
+		rand.Seed(time.Now().UTC().UnixNano())
+		min := 0
+		max := len(p.Servers) - 1
+		idx := min + rand.Intn(max-min)
+		p.AddServer(p.Servers[idx].Host, p.Servers[idx].Port)
+
+		c = <-p.pool
+	}
+	return c, nil
 }
