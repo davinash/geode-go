@@ -13,13 +13,13 @@ type Region struct {
 // CreateEntry Creates entry
 func CreateEntry(key interface{}, val interface{}) (*v1.Entry, error) {
 	entry := v1.Entry{}
-	v, err := GetEncodedValue(key)
+	v, err := Serialize(key)
 	if err != nil {
 		return nil, err
 	}
 	entry.Key = v
 
-	v, err = GetEncodedValue(val)
+	v, err = Serialize(val)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (r *Region) Put(key interface{}, val interface{}) error {
 }
 
 func (r *Region) Get(key interface{}) (interface{}, error) {
-	v, err := GetEncodedValue(key)
+	v, err := Serialize(key)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (r *Region) Get(key interface{}) (interface{}, error) {
 			resp.GetErrorResponse().GetError().ErrorCode))
 	}
 	ev := resp.GetGetResponse().GetResult()
-	value, err := GetDecodedValue(ev)
+	value, err := Deserialize(ev)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (r *Region) PutIfAbsent(key interface{}, val interface{}) (interface{}, err
 			resp.GetErrorResponse().GetError().ErrorCode))
 	}
 	ev := resp.GetPutIfAbsentResponse().GetOldValue()
-	value, err := GetDecodedValue(ev)
+	value, err := Deserialize(ev)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func (r *Region) PutAll(kvs []*KeyValue) ([]interface{}, error) {
 	ev := resp.GetPutAllResponse().GetFailedKeys()
 	failedKeys := make([]interface{}, 0)
 	for _, k := range ev {
-		value, err := GetDecodedValue(k.GetKey())
+		value, err := Deserialize(k.GetKey())
 		if err != nil {
 			return failedKeys, err
 		}
@@ -154,7 +154,7 @@ func (r *Region) PutAll(kvs []*KeyValue) ([]interface{}, error) {
 func (r *Region) GetAll(keys []string) ([]*KeyValue, error) {
 	keysE := make([]*v1.EncodedValue, 0)
 	for _, k := range keys {
-		kE, err := GetEncodedValue(k)
+		kE, err := Serialize(k)
 		if err != nil {
 			return nil, err
 		}
@@ -183,13 +183,13 @@ func (r *Region) GetAll(keys []string) ([]*KeyValue, error) {
 			Key:   nil,
 			Value: nil,
 		}
-		value, err := GetDecodedValue(e.Key)
+		value, err := Deserialize(e.Key)
 		if err != nil {
 			return nil, err
 		}
 		kv.Key = value
 
-		value, err = GetDecodedValue(e.Value)
+		value, err = Deserialize(e.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -201,7 +201,7 @@ func (r *Region) GetAll(keys []string) ([]*KeyValue, error) {
 }
 
 func (r *Region) Remove(key interface{}) error {
-	kd, err := GetEncodedValue(key)
+	kd, err := Serialize(key)
 	if err != nil {
 		return err
 	}
@@ -253,7 +253,7 @@ func (r *Region) KeySet() ([]interface{}, error) {
 	}
 	result := make([]interface{}, 0)
 	for _, k := range resp.GetKeySetResponse().Keys {
-		kd, err := GetDecodedValue(k)
+		kd, err := Deserialize(k)
 		if err != nil {
 			return nil, err
 		}
