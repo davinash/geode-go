@@ -17,3 +17,5 @@
 *.xml
 .idea/
 out/
+server/
+locator/
