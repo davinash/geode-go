@@ -1,12 +1,9 @@
 package pkg
 
 import (
-	"fmt"
-	"github.com/davinash/geode-go/pb/geode/protobuf"
 	v1 "github.com/davinash/geode-go/pb/geode/protobuf/v1"
 	"github.com/golang/protobuf/proto"
 	"io"
-	"log"
 	"net"
 )
 
@@ -78,40 +75,4 @@ func (c *Connection) SendAndReceive(m proto.Message) (*v1.Message, error) {
 		return nil, err
 	}
 	return c.Receive()
-}
-
-func NewGeodeConnection(host string, port int) (*Connection, error) {
-	c := &Connection{
-		Host: host,
-		Port: port,
-	}
-	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port))
-	if err != nil {
-		return nil, err
-	}
-	c.Conn = conn
-	cv := protobuf.NewConnectionClientVersion{
-		MajorVersion: uint32(protobuf.MajorVersions_CURRENT_MAJOR_VERSION),
-		MinorVersion: uint32(protobuf.MinorVersions_CURRENT_MINOR_VERSION),
-	}
-	err = c.Send(&cv)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	resp, err := c.ReceiveRaw()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	p := proto.NewBuffer(resp)
-	var va protobuf.VersionAcknowledgement
-	err = p.DecodeMessage(&va)
-	if err != nil {
-		return nil, err
-	}
-	if va.GetVersionAccepted() == false {
-		return nil, fmt.Errorf("client version is not compitable with server")
-	} else {
-		log.Println("Connection established")
-	}
-	return c, nil
 }

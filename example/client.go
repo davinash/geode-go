@@ -70,12 +70,12 @@ func main() {
 	for i := 0; i < 10; i++ {
 		keys = append(keys, fmt.Sprintf("Key-PutAll-%d", i))
 	}
-	values, err := region.GetAll(keys)
-	for _, v := range values {
-		log.Printf("Key = %v Value = %v\n", v.Key, v.Value)
-	}
+	//values, err := region.GetAll(keys)
+	//for _, v := range values {
+	//	log.Printf("Key = %v Value = %v\n", v.Key, v.Value)
+	//}
 
-	log.Println("----- GetAll -----")
+	log.Println("----- Remove -----")
 	err = region.Remove("Key-PutAll-0")
 	if err != nil {
 		log.Fatalln(err)
