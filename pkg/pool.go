@@ -17,6 +17,7 @@ type Server struct {
 	Port int
 	Conn net.Conn
 }
+
 type Pool struct {
 	Servers []Server
 	pool    chan *Server
@@ -59,9 +60,8 @@ func (p *Pool) AddServer(host string, port int) error {
 	}
 	if va.GetVersionAccepted() == false {
 		return fmt.Errorf("client version is not compitable with server")
-	} else {
-		log.Println("Connection established")
 	}
+
 	p.Servers = append(p.Servers, Server{
 		Host: host,
 		Port: port,
