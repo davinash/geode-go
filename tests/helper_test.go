@@ -2,7 +2,9 @@ package tests
 
 import (
 	"fmt"
+	client "github.com/davinash/geode-go"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -13,6 +15,7 @@ import (
 type GeodeTestSuite struct {
 	suite.Suite
 	GeodeHome string
+	Client    *client.GeodeClient
 }
 
 func (suite *GeodeTestSuite) SetupTest() {
@@ -21,7 +24,21 @@ func (suite *GeodeTestSuite) SetupTest() {
 	if suite.GeodeHome == "" {
 		suite.T().Fatalf("Define Environment variable GEODE_HOME")
 	}
-	suite.startLocator()
+	err := suite.startLocator()
+	if err != nil {
+		suite.T().FailNow()
+	}
+
+	geodeClient, err := client.NewClient(100)
+	if err != nil {
+		suite.T().FailNow()
+	}
+
+	suite.Client = geodeClient
+	err = suite.startServers(3)
+	if err != nil {
+		suite.T().FailNow()
+	}
 }
 
 func (suite *GeodeTestSuite) TearDownTest() {
@@ -34,13 +51,18 @@ func TestGeodeTestSuite(t *testing.T) {
 }
 
 func (suite *GeodeTestSuite) startLocator() error {
+	d, err := ioutil.TempDir("", "Locator")
+	if err != nil {
+		return err
+	}
 	cmd := exec.Command(filepath.Join(suite.GeodeHome, "bin", "gfsh"),
 		"-e",
-		"start locator --name=locator --bind-address=localhost --port=10334")
+		fmt.Sprintf("start locator --name=locator --bind-address=localhost --port=10334 --dir=%s",
+			d))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	log.Printf("Running Command = %s\n", cmd.String())
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return err
 	}
@@ -63,12 +85,15 @@ func (suite *GeodeTestSuite) stopCluster() error {
 	return nil
 }
 
-func (suite *GeodeTestSuite) startServers(num int) ([]int, error) {
+func (suite *GeodeTestSuite) startServers(num int) error {
 	port := 40404
-	ports := make([]int, 0)
 	for i := 0; i < num; i++ {
+		d, err := ioutil.TempDir("", "Server")
+		if err != nil {
+			return err
+		}
 		c := fmt.Sprintf("start server --name=server-%d --bind-address=localhost --server-port=%d "+
-			"--J=-Dgeode.feature-protobuf-protocol=true", i, port)
+			"--J=-Dgeode.feature-protobuf-protocol=true --dir=%s", i, port, d)
 		cmd := exec.Command(filepath.Join(suite.GeodeHome, "bin", "gfsh"),
 			"-e",
 			"connect",
@@ -77,21 +102,24 @@ func (suite *GeodeTestSuite) startServers(num int) ([]int, error) {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		log.Printf("Running Command = %s\n", cmd.String())
-		err := cmd.Run()
+		err = cmd.Run()
 		if err != nil {
-			return nil, err
+			return err
 		}
-		ports = append(ports, port)
+		err = suite.Client.AddServer("localhost", port)
+		if err != nil {
+			return err
+		}
 		port = port + 1
 	}
-	return ports, nil
+	return nil
 }
 
 type RegionType string
 
 const (
 	Replicate RegionType = "REPLICATE"
-	Partition RegionType = "PARTITIONED"
+	Partition RegionType = "PARTITION"
 )
 
 func (suite *GeodeTestSuite) createRegion(name string, regionType RegionType) error {
