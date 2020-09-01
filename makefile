@@ -15,6 +15,6 @@ test-intg:
 	wget https://github.com/apache/geode/archive/rel/v1.12.0.tar.gz
 	ls -l .
 	pwd
-	tar xvfz v1.12.0.tar.gz -C v1.12.0
+	tar xvfz v1.12.0.tar.gz
 	ls -l .
 	GOFLAGS="-count=1" GO111MODULE=on $(GO_TEST) -timeout 50m github.com/davinash/geode-go/tests -v
