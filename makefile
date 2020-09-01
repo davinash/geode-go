@@ -1,3 +1,4 @@
+GO_TEST=go test
 ifeq ($(OS), Windows_NT)
 	EXE=.exe
 else
@@ -10,3 +11,5 @@ build-example:
 generate:
 	go generate ./...
 
+test-intg:
+	GOFLAGS="-count=1" GO111MODULE=on $(GO_TEST) -timeout 50m github.com/davinash/geode-go/tests -v
