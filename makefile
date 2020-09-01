@@ -12,9 +12,9 @@ generate:
 	go generate ./...
 
 test-intg:
-	wget http://apache.org/dyn/closer.cgi/geode/1.12.0/apache-geode-1.12.0.tgz
+	wget https://github.com/apache/geode/archive/rel/v1.12.0.tar.gz
 	ls -l .
 	pwd
-	tar xvfz apache-geode-1.12.0.tgz
+	tar xvfz v1.12.0.tar.gz -C v1.12.0
 	ls -l .
 	GOFLAGS="-count=1" GO111MODULE=on $(GO_TEST) -timeout 50m github.com/davinash/geode-go/tests -v
