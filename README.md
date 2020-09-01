@@ -1,3 +1,5 @@
+![example workflow file path](https://github.com/davinash/geode-go/blob/master/.github/workflows/go.yml/badge.svg)
+
 # geode-go
 geode-go provides Go package for connecting with [Apache Geode](https://geode.apache.org/).
 
