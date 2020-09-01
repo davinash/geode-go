@@ -17,6 +17,7 @@ type Server struct {
 	Port int
 	Conn net.Conn
 }
+
 type Pool struct {
 	Servers []Server
 	pool    chan *Server

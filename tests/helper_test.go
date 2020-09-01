@@ -26,18 +26,18 @@ func (suite *GeodeTestSuite) SetupTest() {
 	}
 	err := suite.startLocator()
 	if err != nil {
-		suite.T().FailNow()
+		suite.Fail("Failed to Start Locator %v", err)
 	}
 
 	geodeClient, err := client.NewClient(100)
 	if err != nil {
-		suite.T().FailNow()
+		suite.Fail("Failed to create new Geode Client %v", err)
 	}
 
 	suite.Client = geodeClient
 	err = suite.startServers(3)
 	if err != nil {
-		suite.T().FailNow()
+		suite.Fail("Failed to Start Cache servers %v", err)
 	}
 }
 
@@ -133,7 +133,7 @@ func (suite *GeodeTestSuite) createRegion(name string, regionType RegionType) er
 			c)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		suite.T().Logf("Running Command = %s\n", cmd.String())
+		log.Printf("Running Command = %s\n", cmd.String())
 		err := cmd.Run()
 		if err != nil {
 			return err

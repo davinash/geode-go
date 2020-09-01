@@ -1,7 +1,29 @@
 package tests
 
-func (suite *GeodeTestSuite) TestRegionOps() {
+import (
+	"github.com/google/uuid"
+	"sync"
+)
 
+func (suite *GeodeTestSuite) TestRegionOps() {
+	regionName := "TestRegionOps"
+	err := suite.createRegion(regionName, Replicate)
+	if err != nil {
+		suite.Fail("Failed to create Region %v", err)
+	}
+	var wg sync.WaitGroup
+	for i := 0; i < 20; i++ {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			k := uuid.New().String()
+			err2 := suite.Client.Region(regionName).Put(k, k)
+			if err2 != nil {
+				suite.Fail("Failed during Put, Error = %v\n", err)
+			}
+		}(&wg)
+	}
+	wg.Wait()
 }
 
 //func TestBasicOp(t *testing.T) {
