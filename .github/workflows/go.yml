@@ -34,4 +34,4 @@ jobs:
       run: go build -v .
 
     - name: Test
-      run: make test-intg
+      run: make test-intg-git-flow
