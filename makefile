@@ -19,4 +19,5 @@ test-intg:
 	ls -l .
 	pwd
 	which java
+	java -version
 	GOFLAGS="-count=1" GO111MODULE=on $(GO_TEST) -timeout 50m github.com/davinash/geode-go/tests -v
