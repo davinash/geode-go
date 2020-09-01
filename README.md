@@ -42,7 +42,10 @@ geodeClient.Region(regionName).Get("Key")
 geodeClient.Region(regionName).Size()
 ```
 #### KeySet
+```go
 geodeClient.Region(regionName).KeySet()
+```
+
 #### PutIfAbsent
 ```go
 geodeClient.Region(regionName).PutIfAbsent("Key-1", "Value-New")
