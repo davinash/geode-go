@@ -123,25 +123,19 @@ const (
 )
 
 func (suite *GeodeTestSuite) createRegion(name string, regionType RegionType) error {
-	switch regionType {
-	case Replicate:
-		c := fmt.Sprintf("create region --name=%s --type=%s", name, regionType)
-		cmd := exec.Command(filepath.Join(suite.GeodeHome, "bin", "gfsh"),
-			"-e",
-			"connect",
-			"-e",
-			c)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		log.Printf("Running Command = %s\n", cmd.String())
-		err := cmd.Run()
-		if err != nil {
-			return err
-		}
-	case Partition:
-
-	default:
-		return fmt.Errorf(fmt.Sprintf("Unknown Region type received = %v", regionType))
+	c := fmt.Sprintf("create region --name=%s --type=%s", name, regionType)
+	cmd := exec.Command(filepath.Join(suite.GeodeHome, "bin", "gfsh"),
+		"-e",
+		"connect",
+		"-e",
+		c)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	log.Printf("Running Command = %s\n", cmd.String())
+	err := cmd.Run()
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
