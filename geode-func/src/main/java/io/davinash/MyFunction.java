@@ -24,8 +24,11 @@ public class MyFunction implements Function {
     }
     RegionFunctionContext context = (RegionFunctionContext) fc;
 
-    context.getResultSender().sendResult("Result-MyFunction-Success-1");
-    context.getResultSender().lastResult("Result-MyFunction-Last-Result");
+    context.getResultSender().sendResult(1);
+    context.getResultSender().sendResult(2);
+    context.getResultSender().sendResult(3);
+    context.getResultSender().sendResult(4);
+    context.getResultSender().lastResult(100);
   }
 
   @Override

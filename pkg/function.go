@@ -46,7 +46,7 @@ func (f *Function) ExecuteFunctionOnRegion(functionId string, regionName string,
 	ers := resp.GetExecuteFunctionOnRegionResponse().GetResults()
 	result := make([]interface{}, 0)
 	for _, er := range ers {
-		v, err := Serialize(er)
+		v, err := Deserialize(er)
 		if err != nil {
 			return nil, fmt.Errorf("failed to Serialized result")
 		}
