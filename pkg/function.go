@@ -10,7 +10,7 @@ type Function struct {
 }
 
 func (f *Function) ExecuteFunctionOnRegion(functionId string, regionName string,
-	arguments interface{}, keyFilter []interface{}) (interface{}, error) {
+	arguments interface{}, keyFilter []interface{}) ([]interface{}, error) {
 	request := v1.ExecuteFunctionOnRegionRequest{
 		FunctionID: functionId,
 		Region:     regionName,

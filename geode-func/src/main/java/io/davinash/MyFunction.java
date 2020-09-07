@@ -7,7 +7,7 @@ import org.apache.geode.cache.execute.FunctionException;
 import org.apache.geode.cache.execute.RegionFunctionContext;
 
 /**
- * Hello world!
+ * MyFunction!
  */
 public class MyFunction implements Function {
 
