@@ -39,6 +39,26 @@ func (suite *GeodeTestSuite) SetupTest() {
 	if err != nil {
 		suite.Fail("Failed to Start Cache servers %v", err)
 	}
+	err = suite.deployFunctions()
+	if err != nil {
+		suite.Fail("Failed to Start Cache servers %v", err)
+	}
+}
+
+func (suite *GeodeTestSuite) deployFunctions() error {
+	cmd := exec.Command(filepath.Join(suite.GeodeHome, "bin", "gfsh"),
+		"-e",
+		"connect",
+		"-e",
+		"deploy --jar=../geode-func/target/geode-func-1.0-SNAPSHOT.jar")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	log.Printf("Running Command = %s\n", cmd.String())
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (suite *GeodeTestSuite) TearDownTest() {
