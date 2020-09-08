@@ -2,6 +2,9 @@
 # geode-go
 geode-go provides Go package for connecting with [Apache Geode](https://geode.apache.org/).
 
+#### Inspired by
+* https://github.com/gemfire/geode-go-client
+
 ## Install
 ```bash
 go get -u github.com/davinash/geode-go
