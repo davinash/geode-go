@@ -92,6 +92,38 @@ func (f *Function) ExecuteFunctionOnMember(functionId string, members []string, 
 	return result, nil
 }
 
-func (f *Function) ExecuteFunctionOnGroup(functionId string, groupName string) error {
-	return nil
+func (f *Function) ExecuteFunctionOnGroup(functionId string, groupNames []string, arguments interface{}) ([]interface{}, error) {
+	request := v1.ExecuteFunctionOnGroupRequest{
+		FunctionID: functionId,
+	}
+	request.GroupName = append(request.GroupName, groupNames...)
+	args, err := Serialize(arguments)
+	if err != nil {
+		return nil, fmt.Errorf("failed to Serialized the arguments")
+	}
+	request.Arguments = args
+	msg := v1.Message{
+		MessageType: &v1.Message_ExecuteFunctionOnGroupRequest{
+			ExecuteFunctionOnGroupRequest: &request,
+		},
+	}
+	resp, err := f.Pool.SendAndReceive(&msg)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetErrorResponse() != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("ExecuteFunctionOnGroup Failed Message = %s, Error Code = %d",
+			resp.GetErrorResponse().GetError().Message,
+			resp.GetErrorResponse().GetError().ErrorCode))
+	}
+	ers := resp.GetExecuteFunctionOnGroupResponse().GetResults()
+	result := make([]interface{}, 0)
+	for _, er := range ers {
+		v, err := Deserialize(er)
+		if err != nil {
+			return nil, fmt.Errorf("failed to Serialized result")
+		}
+		result = append(result, v)
+	}
+	return result, nil
 }
