@@ -14,8 +14,10 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 *.iml
-*.xml
 .idea/
 out/
 server*/
 locator*/
+
+*.class
+target/

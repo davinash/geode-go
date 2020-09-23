@@ -32,6 +32,12 @@ func (g *GeodeClient) Region(s string) *pkg.Region {
 	}
 }
 
+func (g *GeodeClient) FunctionService() *pkg.Function {
+	return &pkg.Function{
+		Pool: g.Pool,
+	}
+}
+
 // GetRegionNames Gets all the regions created in a cluster
 func (g *GeodeClient) GetRegionNames() ([]string, error) {
 	msg := v1.Message{MessageType: &v1.Message_GetRegionNamesRequest{}}
