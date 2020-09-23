@@ -113,7 +113,7 @@ func (suite *GeodeTestSuite) startServers(num int) error {
 			return err
 		}
 		c := fmt.Sprintf("start server --name=server-%d --bind-address=localhost --server-port=%d "+
-			"--J=-Dgeode.feature-protobuf-protocol=true --dir=%s", i, port, d)
+			"--J=-Dgeode.feature-protobuf-protocol=true --dir=%s --group=MyGroup", i, port, d)
 		cmd := exec.Command(filepath.Join(suite.GeodeHome, "bin", "gfsh"),
 			"-e",
 			"connect",
