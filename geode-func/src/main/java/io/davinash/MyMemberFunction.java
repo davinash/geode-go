@@ -22,8 +22,7 @@ public class MyMemberFunction implements Function {
 
   @Override
   public void execute(FunctionContext fc) {
-    fc.getResultSender().sendResult(fc.getMemberName());
-    fc.getResultSender().lastResult("Success");
+    fc.getResultSender().lastResult(fc.getMemberName());
   }
 
   @Override

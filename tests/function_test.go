@@ -16,15 +16,28 @@ func (suite *GeodeTestSuite) TestFunction_OnRegion() {
 	if err != nil {
 		suite.Fail(fmt.Sprintf("ExecuteFunctionOnRegion Failed, Error = %v", err))
 	}
-	var expectedValues = []int32{1, 2, 3, 4, 100}
+	var expectedValues = map[int]bool{
+		1:   false,
+		2:   false,
+		3:   false,
+		4:   false,
+		100: false,
+	}
 	if len(result) != len(expectedValues) {
 		suite.FailNow(fmt.Sprintf("Mismatch in result length, Expected = %d, Actual = %d",
 			len(expectedValues), len(result)))
 	}
-	for i, v := range result {
-		if v.(int32) != expectedValues[i] {
-			suite.FailNow(fmt.Sprintf("Value Mistmatch, Expected = %v, Actual = %v",
-				expectedValues[i], v))
+	for _, v := range result {
+		value := v.(int32)
+		_, ok := expectedValues[int(value)]
+		if !ok {
+			suite.Fail(fmt.Sprintf("Unexpected Value Received %v", v))
+		}
+		expectedValues[int(value)] = true
+	}
+	for _, value := range expectedValues {
+		if value == false {
+			suite.Fail("Did not received all the values")
 		}
 	}
 }
@@ -50,15 +63,24 @@ func (suite *GeodeTestSuite) TestFunction_OnMember() {
 	}
 	log.Printf("-----> %v", result)
 
-	var expectedValues = []string{"server-1", "Success", "server-2", "Success"}
+	var expectedValues = map[string]bool{
+		"server-1": false,
+		"server-2": false,
+	}
 	if len(result) != len(expectedValues) {
 		suite.FailNow(fmt.Sprintf("Mismatch in result length, Expected = %d, Actual = %d",
 			len(expectedValues), len(result)))
 	}
-	for i, v := range result {
-		if v.(string) != expectedValues[i] {
-			suite.FailNow(fmt.Sprintf("Value Mistmatch, Expected = %v, Actual = %v",
-				expectedValues[i], v))
+	for _, v := range result {
+		_, ok := expectedValues[v.(string)]
+		if !ok {
+			suite.Fail(fmt.Sprintf("Unexpected Value Received %v", v))
+		}
+		expectedValues[v.(string)] = true
+	}
+	for _, value := range expectedValues {
+		if value == false {
+			suite.Fail("Did not received all the values")
 		}
 	}
 }
