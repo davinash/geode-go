@@ -20,6 +20,10 @@ go get -u github.com/davinash/geode-go
 * Size
 * Clear
 
+## Function Execution 
+* ExecuteFunctionOnRegion
+* ExecuteFunctionOnMember
+
 ## API Usage
 #### Create a new client 
 ```go
